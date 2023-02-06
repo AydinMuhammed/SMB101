@@ -35,3 +35,6 @@ Liste numéroé tu mets le chiffre et point avant
 
 Couleur 
 <span style="color:blue">some **blue** text</span>.
+
+Commentaire :
+<!--  -->
