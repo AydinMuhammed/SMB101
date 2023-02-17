@@ -53,3 +53,5 @@ Afin de vérifier, lancer le programme test en .c "Hello World".
     <h3><li> Configurer aussi pour le serveur virtuel Linux Ubuntu </h3> (voir comment faire)
     </li>
 </ul>
+Le compilateur gcc et l'extension pour visualiser les fichiers md sont déjà installé de base.
+Finalement, il suffit juste d'installer l'extension C/C++ ainsi que Code Runner.
