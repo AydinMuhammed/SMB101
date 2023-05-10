@@ -42,16 +42,21 @@ int main(void){
     return 0;
 }
 ```
-Une erreure devrait être affiché à la première ligne, faites correction rapide puis première option.
+<p>Une erreure devrait être affiché à la première ligne, faites correction rapide puis première option.
 Vous devrez être rediriger vers la page d'option de l'extension C/C++, il faut modifier l'option "Compiler PATH" et mettre la bonne adresse (tel que C:\mingw64\bin\gcc.exe), pour cela voir l'emplacement à laquelle vous avez installer le complilateur.
 
 Un fichier "c_ccp_properties.json" devrait être crée avec vos propres option. Il faut faire attention à ne jamais commit ce fichier.
 
-Afin de vérifier, lancer le programme test en .c "Hello World".
+Afin de vérifier, lancer le programme test en .c "Hello World".</p>
 
 <ul>
-    <h3><li> Configurer aussi pour le serveur virtuel Linux Ubuntu </h3> (voir comment faire)
+    <h3><li> Configurer aussi pour le serveur virtuel Linux Ubuntu </h3>
     </li>
+    <p>Le compilateur gcc et l'extension pour visualiser les fichiers md sont déjà installé de base.
+    Finalement, il suffit juste d'installer l'extension C/C++ ainsi que Code Runner.</p>
+    <h3><li>Commande a éxécuter pour compiler</h3></li>
 </ul>
-Le compilateur gcc et l'extension pour visualiser les fichiers md sont déjà installé de base.
-Finalement, il suffit juste d'installer l'extension C/C++ ainsi que Code Runner.
+
+```cmd
+gcc fichier.c -o fichier (nom du fichier en sortie en .exe )
+```
