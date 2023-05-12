@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 int main(int argc, char* argv[]) {
     // Vérifie si le nom de fichier est fourni en argument
@@ -9,10 +10,18 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
+// Vérifie si l'extension du fichier est .txt
+    char* filename = argv[1];
+    size_t filename_len = strlen(filename);
+    if (filename_len < 5 || strcmp(&filename[filename_len - 4], ".txt") != 0) {
+        printf("Error: invalid file extension. File must be a .txt file.\n");
+        return 1;
+    }
+
     // Ouvre le fichier en lecture seule
-    int fd = open(argv[1], O_RDONLY);
+    int fd = open(filename, O_RDONLY);
     if (fd < 0) {
-        printf("Error: failed to open file %s\n", argv[1]);
+        printf("Error: failed to open file %s\n", filename);
         return 1;
     }
     
@@ -34,6 +43,8 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-//     Pour tester le programme avec le fichier exemple.txt, vous pouvez exécuter la commande suivante dans un terminal :
+//     Pour tester le programme avec le fichier exemple.txt (le fichier .txt doit etre dans le dossier exo2), vous pouvez exécuter la commande suivante dans un terminal :
 
 //     ./programme exemple.txt
+
+//     Note: bien se placer dans le dossier exo2 avant d'exécuter la commande ci-dessus.
