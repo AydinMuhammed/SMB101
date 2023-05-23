@@ -9,6 +9,7 @@ int counter = 0;
 void sigint_handler(int signum)
 {
     counter++;
+    printf("Nombre total de signaux SIGINT reçus : %d\n", counter);
 }
 
 void sigterm_handler(int signum)
