@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/types.h>
 
 int score_pere = 0, score_enfant = 0;
 
