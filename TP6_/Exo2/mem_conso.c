@@ -41,3 +41,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+//pour tester exemple : ./mem_conso 50
