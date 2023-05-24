@@ -5,88 +5,72 @@
 #include <time.h>
 #include <sys/types.h>
 
-int score_pere = 0, score_enfant = 0;
+volatile int p_points = 0; // Points du processus père
+volatile int f_points = 0; // Points du processus fils
+pid_t p_pid; // ID du processus père
+pid_t f_pid; // ID du processus fils
 
-void handle_sigusr1(int sig) {
-    int random_number = rand() % 2;
-    if (random_number == 1) {
-        printf("Le papa renvoie la balle\n");
-        kill(getppid(), SIGUSR1);
-        score_pere++;
+// Gestionnaire de signaux
+void sig_handler(int signal) {
+    if (p_pid == getpid()) {
+        printf("Père: Signal reçu\n");
+        sleep(1); // Rajoute du délai
+        if (rand() % 2) { // Une chance sur deux de renvoyer la balle
+            printf("Père: Renvoie la balle\n");
+            kill(f_pid, SIGUSR1);
+        } else {
+            printf("Père: Manque la balle\n");
+            f_points++; // Incrémente les points du fils
+            kill(f_pid, SIGUSR1);
+        }
     } else {
-        printf("Le papa manque la balle\n");
-        kill(getppid(), SIGUSR2);
-        score_enfant++;
+        printf("Fils: Signal reçu\n");
+        sleep(1); // Rajoute du délai
+        if (rand() % 2) { // Une chance sur deux de renvoyer la balle
+            printf("Fils: Renvoie la balle\n");
+            kill(p_pid, SIGUSR1);
+        } else {
+            printf("Fils: Manque la balle\n");
+            p_points++; // Incrémente les points du père
+            kill(p_pid, SIGUSR1);
+        }
     }
-    printf("Signal reçu (score : papa = %d, enfant = %d)\n", score_pere, score_enfant);
-    sleep(1);
-}
-
-void handle_sigusr2(int sig) {
-    int random_number = rand() % 2;
-    if (random_number == 1) {
-        printf("Le enfant renvoie la balle\n");
-        kill(getppid(), SIGUSR2);
-        score_enfant++;
-    } else {
-        printf("Le enfant manque la balle\n");
-        kill(getppid(), SIGUSR1);
-        score_pere++;
+    if (p_points == 13) {
+        printf("Père: J'ai gagné !\n");
+        kill(f_pid, SIGTERM); // Envoie SIGTERM au fils pour terminer le jeu
+        exit(EXIT_SUCCESS);
+    } else if (f_points == 13) {
+        printf("Fils: J'ai gagné !\n");
+        kill(p_pid, SIGTERM); // Envoie SIGTERM au père pour terminer le jeu
+        exit(EXIT_SUCCESS);
     }
-    printf("Signal reçu (score : papa = %d, enfant = %d)\n", score_pere, score_enfant);
-    sleep(1);
-}
-
-void handle_sigterm(int sig) {
-    if (score_pere == 13) {
-        printf("J'ai gagné !\n");
-    } else if (score_enfant == 13) {
-        printf("Mon enfant a gagné !\n");
-    }
-    exit(EXIT_SUCCESS);
 }
 
 int main() {
     srand(time(NULL));
-    signal(SIGUSR1, handle_sigusr1);
-    signal(SIGUSR2, handle_sigusr2);
-    signal(SIGTERM, handle_sigterm);
-    
-    pid_t pid = fork();
-
-    if (pid == -1) {
-        perror("Erreur dans la création du enfant\n");
+    p_pid = getpid(); // Obtient l'ID du processus père
+    f_pid = fork(); // Crée un processus fils
+    if (f_pid < 0) {
+        perror("Erreur lors de la création du processus fils");
         exit(EXIT_FAILURE);
-    } else if (pid == 0) {
-        // processus enfant
-        while (score_enfant < 13 && score_pere < 13) {
-            sleep(1);
+    }
+    if (f_pid == 0) {
+        // Processus fils
+        f_pid = getpid(); // Obtient l'ID du processus fils
+        signal(SIGUSR1, sig_handler); // Associe le gestionnaire de signal au SIGUSR1
+        while (1) {
+            pause(); // Attente passive des signaux
         }
     } else {
-        // processus père
-        kill(pid, SIGUSR1);
-        while (score_enfant < 13 && score_pere < 13) {
-            sleep(1);
+        // Processus père
+        signal(SIGUSR1, sig_handler); // Associe le gestionnaire de signal au SIGUSR1
+        sleep(1);
+        printf("Père: Envoie la balle\n");
+        kill(f_pid, SIGUSR1); // Envoie SIGUSR1 au fils pour commencer le jeu
+
+        while (1) {
+            pause(); // Attente passive des signaux
         }
     }
-
-    // Nettoyage et terminaison
-    if (pid == 0) {
-        // processus enfant
-        if (score_enfant == 13) {
-            printf("Mon enfant a gagné !\n");
-        }
-    } else {
-        // processus père
-        if (score_pere == 13) {
-            printf("J'ai gagné !\n");
-        }
-    }
-
-    printf("Appuyez sur une touche pour quitter...\n");
-    getchar();
-    
     return 0;
 }
-
-// pour tester le programme : ./ping
